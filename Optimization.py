@@ -38,8 +38,8 @@ class Optimization:
 
 #User input    
 x = sym.Symbol('x')
-#fx_input = (x*x*sym.cos(x)-x)/10.    
-fx_input = x*x - 5*x  
+fx_input = (x*x*sym.cos(x)-x)/10.    
+#fx_input = x*x - 5*x  
 
     
 test = Optimization(fx_input,6,0.2,50)
