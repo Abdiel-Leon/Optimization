@@ -53,14 +53,19 @@ class Optimization:
         return df_dx, df_dy
         
     def Compute_gradient_descent(self):  
-
+        x = sym.Symbol('x')
+        y = sym.Symbol('y')
         x_old = self.x0 
         y_old = self.y0    
+        df_dx, df_dy = self.Compute_df_dx()
+
+        df_dx_numeric = lambdify((x, y), df_dx)
+        df_dy_numeric = lambdify((x, y), df_dy)
+
 
         for i in range(self.n_iter):  
-            df_dx, df_dy = self.Compute_df_dx()
-            df_dx_eval = df_dx.evalf(subs={'x': x_old, 'y': y_old})
-            df_dy_eval = df_dy.evalf(subs={'x': x_old, 'y': y_old})
+            df_dx_eval =  df_dx_numeric(x_old, y_old)
+            df_dy_eval =  df_dy_numeric(x_old, y_old)
 
             #update of vectors
             x_new = x_old - self.alpha*df_dx_eval
@@ -78,11 +83,10 @@ y = sym.Symbol('y')
 a = 1
 b =100
 fx_input = (a-x)* (a-x) + b*(y - x*x)*(y - x*x)
-#fx_input = (x*x*sym.cos(x)-x)/10.    
-#fx_input = x*x - 5*x  
-
 x = (0,0)   
-test = Optimization(fx_input,0.002,5000,*x)
+
+
+test = Optimization(fx_input,0.002,2000,*x)
 test.Plot_function(fx_input)
 x = test.Compute_gradient_descent()
 print('Minimum of fx located at: ',x)
