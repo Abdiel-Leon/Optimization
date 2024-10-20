@@ -7,6 +7,11 @@ Created on Thu Oct 17 21:39:44 2024
 
 import numpy as np
 import sympy as sym
+import matplotlib.pyplot as plt
+from matplotlib import cm
+from sympy.utilities.lambdify import lambdify
+
+
 class Optimization:
     
     def __init__(self,fx_input,alpha,n,*x):
@@ -16,6 +21,24 @@ class Optimization:
         self.alpha = alpha
         self.n_iter = n
         self.fx_input = fx_input
+
+    def Plot_function(self,fx_input):
+
+        x,y = sym.symbols('x,y')
+
+        X = np.arange(-5, 5, 0.25)
+        Y = np.arange(-5, 5, 0.25)
+        X, Y = np.meshgrid(X, Y)
+
+        # Lambdfy and vectorize symbolic function
+        fxy = np.vectorize(lambdify([x, y], fx_input))
+        z = fxy(X,Y)
+
+        # Plot the surface.
+        fig, ax = plt.subplots(subplot_kw={"projection": "3d"})
+        surf = ax.plot_surface(X, Y, z, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)    
+        plt.show()
         
 
     def Compute_fx(self,fx_input):
@@ -30,8 +53,10 @@ class Optimization:
         return df_dx, df_dy
         
     def Compute_gradient_descent(self):  
+
         x_old = self.x0 
         y_old = self.y0    
+
         for i in range(self.n_iter):  
             df_dx, df_dy = self.Compute_df_dx()
             df_dx_eval = df_dx.evalf(subs={'x': x_old, 'y': y_old})
@@ -42,7 +67,6 @@ class Optimization:
             y_new = y_old - self.alpha*df_dy_eval
             x_old = x_new
             y_old = y_new
-
 
         return x_new, y_new
         
@@ -59,6 +83,6 @@ fx_input = (a-x)* (a-x) + b*(y - x*x)*(y - x*x)
 
 x = (0,0)   
 test = Optimization(fx_input,0.002,5000,*x)
-
+test.Plot_function(fx_input)
 x = test.Compute_gradient_descent()
-print(x)
+print('Minimum of fx located at: ',x)
